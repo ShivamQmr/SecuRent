@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, TextInput, View, Text, Button } from "react-native";
-import API from './api'
+import API from '../api'
 
-export default function count(){
-    const [Name, setName] = useState('')
-    const [NameList, setNameList] = useState([])
+export default function VechicleList(){
+    const [name, setName] = useState('')
+    const [nameList, setNameList] = useState([])
 
     const data = async () => {
         API.get('vehicles/')
@@ -13,7 +13,7 @@ export default function count(){
     }
 
     const input = async () => {
-        API.post('vehicles/', {name: Name})
+        API.post('vehicles/', {name: name})
         .then(response => {
             console.log(response.data)
             setName('')
@@ -28,10 +28,10 @@ export default function count(){
 
     return(
         <View>
-            <TextInput placeholder="Enter the vehicle number" value={Name} onChangeText={setName}/>
+            <TextInput placeholder="Enter the vehicle number" value={name} onChangeText={setName}/>
             <Button title="Save" onPress={input}></Button>
             <FlatList
-                data={NameList}
+                data={nameList}
                 renderItem={({item}) => (<Text>{item.name}</Text>)}>
             </FlatList>
         </View>
