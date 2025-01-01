@@ -6,25 +6,25 @@ from django.contrib.auth.models import User, Group, Permission
 
 class Owner(models.Model):
     #Here email is used as foreign key: So, don't put feature to update email / If making update feature uuid should be used and all vehicle related to this key will be cascaded
-    email = models.OneToOneField(User, on_delete=models.CASCADE, related_name='email', primary_key=True) #Used for Primary Key/Used as Foreign key of Vehicle as well
-    service_name = models.CharField( null=True)  #Name of the business
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='owner_email', primary_key=True) #Used for Primary Key/Used as Foreign key of Vehicle as well
+    service_name = models.CharField(max_length=255, null=True)  #Name of the business
     full_name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
-    profile_img = models.URLField() #bring link from AWS S3 
+    profile_img = models.URLField(null=True) #bring link from AWS S3 
     address = models.CharField(max_length= 255)
 
     def __str__(self):
         return self.service_name
 
 class Vehicle(models.Model):
-    email = models.ForeignKey( Owner, on_delete=models.CASCADE, related_name='vehicles') #Used as a key to link with Owner profile
+    owner = models.ForeignKey( Owner, on_delete=models.CASCADE, related_name='vehicles') #Used as a key to link with Owner profile
     number = models.CharField( unique= True, primary_key= True) #Vehicle number: Used as Primary Key
     vehicle_type = models.CharField(max_length=20, choices=[('Bike', 'Bike'), ('Car', 'Car'), ('Elite Car', 'Elite Car'), ('Pickup Truck','Pickup Truck')]) # Only four types: Bike, Car, Elite car, and Pickup Truck
     name = models.CharField(max_length=50)
     model = models.CharField(max_length=50) # Model of the vehicle
-    rate_description = models.CharField() 
+    rate_description = models.CharField(max_length=255) 
     year_of_manufacture = models.DateField()
-    condition_description = models.CharField()
+    condition_description = models.CharField(max_length=255)
     img = models.URLField() #Image of Vehicle from AWS S3 
 
     def __str__(self):
@@ -47,12 +47,12 @@ class Renter(models.Model):
         return self.id 
 
 class Reviews(models.Model):
-    id = models.ForeignKey( Renter, on_delete=models.CASCADE, related_name='reviews') # id of Renter 
+    renter = models.ForeignKey( Renter, on_delete=models.CASCADE, related_name='reviews') # id of Renter 
     owner_email = models.ForeignKey(Owner, on_delete=models.CASCADE, related_name='owner')
-    vehicle = models.CharField() # Previously rented vehicle over which review is done
+    vehicle = models.CharField(max_length=255) # Previously rented vehicle over which review is done
     rating = models.IntegerField(range(1,5))
     comment_type = models.CharField( max_length=10, choices=[('Feedback', 'Feedback'), ('Report', 'Report')]) #Types: Feedback or Report 
     comment = models.TextField()
 
     def __str__(self):
-        return self.id + "review"
+        return f"Review by {self.id} on {self.vehicle}"

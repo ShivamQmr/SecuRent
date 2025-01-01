@@ -1,19 +1,29 @@
 #This file creates views
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+
 from .models import Vehicle
 from .serializer import VehicalSerializer
-from django.http import request, HttpResponseRedirect
-from .forms import LoginForm
-from django.contrib.auth.models import User
-from http import request
 
-class RegisterOwner(User):
-    def post(request):
-        user = User.objects.create_user(request.data['email'])
-        user.set_password(request.data['password'])
-        user.save()
-        return HttpResponseRedirect()
+@method_decorator(csrf_exempt, name='dispatch')  # Apply csrf_exempt to the entire class
+class RegisterOwner(APIView):  # Inheriting from APIView
+    permission_classes = [AllowAny]
+    def post(self, request):
+        try:
+            # Create a new user with the provided email and password
+            user = User.objects.create_user(
+                username=request.data['email'], 
+                password=request.data['password']
+            )
+            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VehicleList(APIView):
