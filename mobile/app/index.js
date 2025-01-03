@@ -1,4 +1,3 @@
-// index.js
 import React, { useEffect, useState } from "react";
 import { Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,12 +14,16 @@ export default function App() {
 
     useEffect(() => {
         const checkToken = async () => {
-            const userToken = await AsyncStorage.getItem("token");
-            if (userToken) {
-                const parsedToken = JSON.parse(userToken);
-                if (parsedToken && parsedToken.isValid) {
-                    setInitialRouteName("Home");
+            try {
+                const userToken = await AsyncStorage.getItem("token");
+                if (userToken) {
+                    const parsedToken = JSON.parse(userToken);
+                    if (parsedToken && parsedToken.isValid) {
+                        setInitialRouteName("VehicleList");
+                    }
                 }
+            } catch (error) {
+                console.error("Error checking token:", error);
             }
             setLoading(false);
         };
@@ -31,11 +34,13 @@ export default function App() {
     if (loading) return <Text>Loading...</Text>;
 
     return (
-        // <NavigationContainer>
+        <View>
+        <NavigationContainer independent = {true}>
             <Stack.Navigator initialRouteName={initialRouteName}>
                 <Stack.Screen name="Home" component={VehicleList} />
                 <Stack.Screen name="Login" component={Login} />
             </Stack.Navigator>
-        // </NavigationContainer>
+        </NavigationContainer>
+        </View>
     );
 }
