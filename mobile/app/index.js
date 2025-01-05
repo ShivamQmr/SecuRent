@@ -34,13 +34,11 @@ export default function App() {
     if (loading) return <Text>Loading...</Text>;
 
     return (
-        <View>
-        <NavigationContainer independent = {true}>
+        <NavigationContainer>
             <Stack.Navigator initialRouteName={initialRouteName}>
                 <Stack.Screen name="Home" component={VehicleList} />
                 <Stack.Screen name="Login" component={Login} />
             </Stack.Navigator>
         </NavigationContainer>
-        </View>
     );
 }
